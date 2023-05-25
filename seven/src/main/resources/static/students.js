@@ -21,4 +21,19 @@ angular.module('studs',[]).controller('sevenController', function ($scope, $http
             });
     };
 
+    $scope.addStudent = function () {
+        $http({
+            url: contextPath + '/add',
+            method: 'POST',
+            params: {
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value
+            }
+        }).then(function (response) {
+            $scope.loadStudents();
+        });
+
+    };
+
+
 });

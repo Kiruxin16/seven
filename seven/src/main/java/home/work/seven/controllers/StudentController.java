@@ -26,8 +26,8 @@ public class StudentController {
     }
 
     @PostMapping("/add")
-    public  void addStudent(StudentDto dto){
-        studentService.addStudent(dto);
+    public  void addStudent(@RequestParam("name")String name,@RequestParam("age") int age){
+        studentService.addStudent(new StudentDto(name,age));
     }
 
 
