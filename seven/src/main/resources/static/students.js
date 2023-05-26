@@ -1,57 +1,39 @@
-angular.module('students').controller('sevenController', function ($scope, $http,  $localStorage) {
+angular.module('studs',[]).controller('sevenController', function ($scope, $http) {
 
-    const cartContextPath ='http://localhost:5555/cart/';
-    const contextPath ='http://localhost:5555/core/';
+    const contextPath ='http://localhost:8189/only-task/students';
 
-    $scope.loadProducts = function (page = 1) {
+
+    $scope.loadStudents = function(){
+        $http.get(contextPath).then(function (response){
+            $scope.students = response.data;
+        });
+    }
+    $scope.loadStudents();
+
+
+    $scope.removeStudent = function (id){
         $http({
-            url: 'http://localhost:5555/core/api/v1/products',
-            method: 'GET',
+            url:contextPath+'/delete/'+id,
+            method: 'POST'
+        })
+            .then(function (response){
+                $scope.loadStudents();
+            });
+    };
+
+    $scope.addStudent = function () {
+        $http({
+            url: contextPath + '/add',
+            method: 'POST',
             params: {
-                p: page,
-                title_part: $scope.filter ? $scope.filter.title_part : null,
-                min_price: $scope.filter ? $scope.filter.min_price : null,
-                max_price: $scope.filter ? $scope.filter.max_price : null
+                name: document.getElementById('name').value,
+                age: document.getElementById('age').value
             }
         }).then(function (response) {
-            $scope.productsPage = response.data;
-            $scope.generatePagesList($scope.productsPage.totalPages);
+            $scope.loadStudents();
         });
+
     };
 
 
-
-    $scope.showProductInfo = function(productId){
-        $http.get(contextPath+'api/v1/products/'+productId).then(function (response){
-            alert(response.data.title);
-        });
-    }
-
-    $scope.deleteProductById = function(productId){
-        $http.delete(contextPath+'api/v1/products/'+productId).then(function (response){
-        $scope.loadProducts();
-        });
-    }
-
-    $scope.loadProductsInCart = function(){
-        $http.get(cartContextPath+'api/v1/cart/'+$localStorage.wnteredShopGuestCartId).then(function (response){
-            $scope.cart = response.data;
-        });
-    }
-
-    $scope.addProductToCart = function(productId){
-        $http.post(cartContextPath+'api/v1/cart/'+$localStorage.wnteredShopGuestCartId+'/add/'+productId).then(function (response){
-        $scope.loadProductsInCart();
-        });
-    }
-
-    $scope.generatePagesList = function (totalPages) {
-        out = [];
-        for (let i = 0; i < totalPages; i++) {
-            out.push(i + 1);
-        }
-        $scope.pagesList = out;
-    }
-
-    $scope.loadProducts();
 });
